@@ -1,0 +1,7 @@
+{
+"name":"Qazaq ChemLab","short_name":"ChemLab",
+"description":"Қазақ тіліндегі виртуалды химиялық зертхана",
+"start_url":"./","scope":"./","display":"standalone",
+"background_color":"#07111d","theme_color":"#07111d","lang":"kk",
+"icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

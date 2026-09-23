@@ -355,7 +355,12 @@ html body #view .burnLab .card{
 .metalCoating.show{animation:coatGrow 4s ease forwards}
 @keyframes coatGrow{0%{opacity:0;transform:translateX(-50%) scale(.15)}100%{opacity:1;transform:translateX(-50%) scale(1)}}
 
-</style></head><body>
+</style><link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#07111d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+</head><body>
 <header><div class="brand">⚗ Qazaq <b>ChemLab 12.2.4</b></div><div class="nav">
 <button class="active" onclick="showMode('mix',this)">🧪 Араластыру</button><button onclick="showMode('burn',this)">🔥 Жану</button><button onclick="showMode('elements',this)">⚛ Элементтер</button><button onclick="showMode('indicators',this)">🎨 Индикаторлар</button>
 </div></header>
@@ -676,4 +681,9 @@ function realisticReactionFX(k,r){
   <div>Оқушы: <strong>Маханбет А.О.</strong></div>
 </footer>
 
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
+}
+</script>
 </body></html>
