@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Qazaq ChemLab 12.2.4</title>
+<style>
+:root{--bg:#07111d;--panel:#0d1b2a;--panel2:#10243a;--line:#24435e;--text:#edf7ff;--muted:#9bb5c9;--accent:#28a9ff}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 55% 0,#12304a,#06101a 55%);color:var(--text);font-family:Inter,system-ui,Arial}
+header{height:72px;display:flex;align-items:center;gap:18px;padding:0 22px;border-bottom:1px solid var(--line);background:#071522e8;position:sticky;top:0;z-index:5}
+.brand{font-weight:850;font-size:24px}.brand b{color:#35b7ff}.nav{display:flex;gap:7px;overflow:auto}.nav button,.btn{border:1px solid #274965;background:#0c1e2e;color:#dff4ff;border-radius:12px;padding:11px 14px;cursor:pointer}.nav button.active,.btn:hover{background:#123b5b;border-color:#38b7ff}
+main{display:grid;grid-template-columns:280px 1fr 320px;min-height:calc(100vh - 72px)}
+aside,.right{padding:14px;border-right:1px solid var(--line);background:#081522c9}.right{border-left:1px solid var(--line);border-right:0}
+.search{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:#102236;color:white;margin-bottom:10px}
+.cat{margin:8px 0;border:1px solid #1e3a52;border-radius:13px;overflow:hidden;background:#0b1a29}
+.cathead{padding:13px;display:flex;justify-content:space-between;cursor:pointer;font-weight:750}.catbody{display:none;padding:7px}.cat.open .catbody{display:grid;grid-template-columns:1fr;gap:6px}.reagent{padding:10px;border:1px solid #203d55;border-radius:10px;background:#102338;cursor:pointer}.reagent:hover{border-color:#38b7ff}.reagent small{color:var(--muted)}
+.stage{padding:22px}.title{font-size:28px;font-weight:850;margin-bottom:4px}.sub{color:var(--muted);margin-bottom:18px}
+.lab{min-height:520px;border:1px solid #23435c;border-radius:20px;background:linear-gradient(#0c1b28bb,#08121bbb),radial-gradient(circle at 50% 80%,#17364c,#07111b 62%);position:relative;overflow:hidden;padding:20px}
+.empty{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:210px;height:260px;border:5px solid #9fdcff55;border-top:0;border-radius:10px 10px 55px 55px;box-shadow:inset 0 0 30px #48bfff22,0 25px 50px #0008}
+.empty:before{content:"";position:absolute;top:-10px;left:-16px;width:232px;height:18px;border:5px solid #bce9ff77;border-radius:50%}
+.liquid{position:absolute;bottom:5px;left:5px;right:5px;height:0;border-radius:0 0 48px 48px;background:#4ab9ff88;transition:.8s}
+.precip{position:absolute;bottom:7px;left:12px;right:12px;height:0;border-radius:50%;transition:1s}
+.solidSample{position:absolute;z-index:3;bottom:14px;left:50%;transform:translateX(-50%);width:82px;height:55px;clip-path:polygon(8% 28%,28% 5%,68% 8%,96% 38%,80% 88%,35% 96%,5% 70%);box-shadow:inset 12px 10px 15px #fff5,inset -14px -12px 18px #0009,0 7px 13px #0008;transition:.6s}
+.powderSample{position:absolute;z-index:3;bottom:13px;left:50%;transform:translateX(-50%);width:92px;height:25px;border-radius:50%;box-shadow:0 -8px 18px #0005,inset 0 6px 10px #fff3}
+.elementLabel{position:absolute;z-index:4;bottom:78px;left:50%;transform:translateX(-50%);font-weight:800;background:#071522dd;border:1px solid #31546d;padding:5px 9px;border-radius:8px;white-space:nowrap}
+.bubbles{position:absolute;inset:0;pointer-events:none}.bubble{position:absolute;bottom:15px;border:2px solid #dff9ff;border-radius:50%;animation:rise 2s infinite}@keyframes rise{to{transform:translateY(-190px);opacity:0}}
+.controls{position:absolute;bottom:18px;left:18px;display:flex;gap:9px}
+.card{border:1px solid #24445d;background:#0c1c2b;border-radius:14px;padding:14px;margin-bottom:12px}.card h3{margin:0 0 8px}.muted{color:var(--muted)}
+.chip{display:inline-block;padding:6px 9px;margin:3px;border-radius:9px;background:#102c43;border:1px solid #27516f}
+.familybar{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 14px}.familybar button{border:1px solid #28506e;background:#0d2133;color:#dff4ff;border-radius:10px;padding:8px 10px;cursor:pointer}.familybar button:hover{border-color:#42bdff}
+.flash{position:absolute;inset:0;background:#fff0;pointer-events:none}.flash.go{animation:flash .7s ease-out}@keyframes flash{20%{background:#fff9}100%{background:#fff0}}
+.gascloud{position:absolute;left:50%;top:20%;transform:translateX(-50%);width:130px;height:70px;border-radius:50%;background:#dff6ff33;filter:blur(6px);animation:cloud 2s infinite alternate}@keyframes cloud{to{transform:translate(-50%,-25px) scale(1.15);opacity:.35}}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:7px;margin:10px 0}.legend span{padding:8px;border:1px solid #24445d;border-radius:9px;background:#0b1d2d}
+#elementGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}.el{border:1px solid #2b526e;border-radius:12px;padding:8px;background:#0d2133;cursor:pointer;text-align:center}.el strong{font-size:22px}.el small{display:block;color:#9fc0d4}
+.atom{height:280px;position:relative;margin-top:12px}.nucleus{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:radial-gradient(circle,#fff,#ff9b3e 40%,#d64122);box-shadow:0 0 30px #ff753d}
+.shell{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid #6dcaff77;border-radius:50%}.electron{position:absolute;width:9px;height:9px;background:#73d9ff;border-radius:50%;box-shadow:0 0 9px #5cd5ff}
+.sample{height:180px;border-radius:16px;border:1px solid #31546d;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#17364b,#07111b);overflow:hidden}.chunk{width:125px;height:95px;clip-path:polygon(10% 30%,30% 5%,68% 8%,94% 35%,80% 85%,35% 95%,5% 70%);box-shadow:inset 15px 15px 20px #fff4,inset -20px -15px 25px #0008}
+.flame{width:130px;height:210px;margin:50px auto 0;border-radius:55% 45% 55% 45%;transform:rotate(45deg);background:radial-gradient(circle at 65% 65%,#fff 0 8%,#ffd84d 25%,#ff6b24 55%,transparent 70%);filter:drop-shadow(0 0 25px #ff8a2c);animation:flick .25s infinite alternate}@keyframes flick{to{transform:rotate(43deg) scale(.96,1.05)}}
+@media(max-width:1000px){main{grid-template-columns:230px 1fr}.right{display:none}}@media(max-width:700px){main{display:block}aside{border:0}.stage{padding:12px}header{height:auto;padding:12px;align-items:flex-start;flex-direction:column}.nav{width:100%}}
+
+/* ChemLab 10.0 realistic digital laboratory */
+.lab.realistic{min-height:590px;background:
+linear-gradient(180deg,#172633 0 12%,#20313d 12% 56%,#0d151c 56% 59%,#171b1e 59% 100%);
+box-shadow:inset 0 0 90px #0009;perspective:900px}
+.labwall{position:absolute;inset:0 0 41% 0;background:
+linear-gradient(90deg,transparent 0 49.7%,#ffffff08 49.7% 50.3%,transparent 50.3%),
+linear-gradient(#ffffff08 1px,transparent 1px);background-size:180px 100%,100% 58px;opacity:.55}
+.bench{position:absolute;left:-3%;right:-3%;bottom:0;height:42%;background:
+linear-gradient(180deg,#454b4e 0 5%,#252a2d 5% 12%,#171b1e 12% 100%);
+transform:rotateX(5deg);box-shadow:0 -8px 30px #000a}
+.shelf{position:absolute;left:5%;right:5%;top:15%;height:9px;background:#303a40;box-shadow:0 8px 12px #0008}
+.bottleRack{position:absolute;left:5%;top:5%;display:flex;align-items:end;gap:9px}
+.bottle{width:34px;height:74px;border:2px solid #ffffff4d;border-radius:7px 7px 11px 11px;background:linear-gradient(90deg,#ffffff19,#58a9d633,#ffffff0a);position:relative;box-shadow:inset 8px 0 12px #fff1,0 8px 12px #0008}
+.bottle:before{content:"";position:absolute;width:17px;height:16px;left:7px;top:-17px;border:2px solid #ffffff4d;border-bottom:0;border-radius:4px 4px 0 0;background:#56636b}
+.bottle:after{content:"";position:absolute;left:4px;right:4px;top:27px;height:18px;background:#eef4e7cc;border-radius:2px}
+.realBeaker{position:absolute;width:235px;height:265px;left:50%;bottom:88px;transform:translateX(-50%);border:4px solid #dff8ff70;border-top:2px solid #dff8ff99;border-radius:8px 8px 30px 30px;background:linear-gradient(90deg,#fff1,#9bdfff08 35%,#fff2 50%,#75cfff08 70%,#fff1);box-shadow:inset 16px 0 25px #fff1,inset -15px 0 25px #67caff0b,0 18px 30px #0008;overflow:hidden}
+.realBeaker:before{content:"";position:absolute;left:20px;top:26px;width:32px;height:2px;background:#dff8ff55;box-shadow:0 35px #dff8ff55,0 70px #dff8ff55,0 105px #dff8ff55,0 140px #dff8ff55}
+.realBeaker:after{content:"250 mL";position:absolute;left:56px;top:18px;color:#e8faff55;font-size:11px}
+.realLiquid{position:absolute;left:3px;right:3px;bottom:3px;height:0%;background:linear-gradient(180deg,#8ddcff88,#318bc899);transition:height .7s,background 1s;box-shadow:inset 0 8px 12px #fff3}
+.realLiquid:before{content:"";position:absolute;left:0;right:0;top:-6px;height:12px;border-radius:50%;background:#c7f2ff66;box-shadow:0 0 16px #a9eaff55}
+.realPpt{position:absolute;left:7px;right:7px;bottom:4px;height:0;border-radius:50% 50% 22px 22px;opacity:.95;transition:height 1.5s;background:#fff}
+.dropper{position:absolute;left:calc(50% + 74px);top:85px;width:22px;height:150px;border:3px solid #dff8ff66;border-radius:9px;background:linear-gradient(90deg,#fff1,#8bdcff22,#fff2);transform:rotate(5deg)}
+.dropper:before{content:"";position:absolute;left:-5px;top:-34px;width:27px;height:42px;border-radius:60% 60% 35% 35%;background:#303941;border:2px solid #63717a}
+.drop{position:absolute;left:calc(50% + 88px);top:225px;width:10px;height:15px;border-radius:60% 60% 70% 70%;background:#7fd8ff;opacity:0}
+.drop.go{animation:dropfall .9s 4}@keyframes dropfall{0%{opacity:0;transform:translateY(-20px)}20%{opacity:1}100%{opacity:0;transform:translateY(95px)}}
+.realBubbles{position:absolute;inset:0}.realBubbles i{position:absolute;bottom:5px;border:1px solid #fff9;border-radius:50%;background:#fff2;animation:realrise 2.2s infinite ease-in}@keyframes realrise{to{transform:translateY(-220px) scale(.55);opacity:0}}
+.smoke{position:absolute;left:50%;bottom:345px;width:150px;height:100px;transform:translateX(-50%);pointer-events:none}.smoke i{position:absolute;bottom:0;width:35px;height:35px;border-radius:50%;background:#e8f6ff1c;filter:blur(7px);animation:smoke 3s infinite}@keyframes smoke{to{transform:translateY(-80px) scale(2);opacity:0}}
+.labtag{position:absolute;right:18px;bottom:18px;color:#d9f5ff77;font-size:12px}
+.burnLab{position:relative;min-height:600px;border:1px solid #b7ddef;border-radius:18px;overflow:hidden;background:linear-gradient(#f9fdff 0 58%,#dceaf1 58% 61%,#edf1f3 61%);box-shadow:0 15px 35px #467c9c20}
+.burnWall{position:absolute;inset:0 0 39% 0;background:linear-gradient(#8fc5e122 1px,transparent 1px),linear-gradient(90deg,#8fc5e122 1px,transparent 1px);background-size:70px 55px}
+.burnBench{position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(#c7d8e0 0 8%,#edf2f4 8%)}
+.burnStage{position:absolute;left:50%;bottom:105px;transform:translateX(-50%);width:330px;height:310px}
+.burner{position:absolute;left:128px;bottom:0;width:74px;height:100px;border-radius:12px 12px 18px 18px;background:linear-gradient(90deg,#71838d,#d7e2e7 45%,#637783);box-shadow:0 12px 20px #52708055}
+.burner:before{content:"";position:absolute;left:20px;top:-45px;width:34px;height:52px;border-radius:5px;background:linear-gradient(90deg,#778a94,#dce6ea,#697e89)}
+.dish{position:absolute;left:90px;bottom:95px;width:150px;height:28px;border-radius:50%;border:4px solid #9db4bf;background:linear-gradient(#fff,#cad7dc);box-shadow:0 10px 15px #54738444}
+.burnSample{position:absolute;left:137px;bottom:116px;width:58px;height:22px;border-radius:45%;background:#bbb;box-shadow:inset 8px 5px 10px #fff7,inset -7px -5px 9px #0003;z-index:4}
+.bigFlame{position:absolute;left:102px;bottom:86px;width:125px;height:205px;opacity:0;transform-origin:50% 100%;filter:drop-shadow(0 0 24px var(--flame,#4aa8ff));z-index:3}
+.bigFlame.on{opacity:1;animation:flicker .18s infinite alternate}
+.bigFlame:before{content:"";position:absolute;inset:0;border-radius:55% 45% 58% 42% / 72% 68% 32% 28%;background:radial-gradient(ellipse at 50% 82%,#fff 0 8%,var(--core,#9ee7ff) 18%,var(--flame,#3e9cff) 45%,transparent 72%);clip-path:polygon(50% 0,80% 37%,93% 67%,76% 100%,24% 100%,7% 67%,20% 37%)}
+@keyframes flicker{to{transform:scaleX(.91) scaleY(1.04) rotate(1.5deg)}}
+.spark{position:absolute;width:5px;height:5px;border-radius:50%;background:#fff6ad;box-shadow:0 0 9px #ffbd45;animation:spark 1.1s infinite ease-out}@keyframes spark{to{transform:translate(var(--dx),-150px);opacity:0}}
+.burnControls{position:absolute;left:18px;top:18px;width:min(410px,calc(100% - 36px));z-index:10;background:#ffffffed;border:1px solid #b9ddef;border-radius:14px;padding:13px;box-shadow:0 10px 24px #477d9c22}
+.burnPicker{display:flex;flex-wrap:wrap;gap:7px;max-height:150px;overflow:auto}.burnPicker button{padding:7px 10px;border:1px solid #abd7ef;border-radius:9px;background:#f8fcff;color:#185c82;cursor:pointer}
+.burnReadout{position:absolute;right:18px;top:18px;width:260px;z-index:9;background:#ffffffeb;border:1px solid #b9ddef;border-radius:14px;padding:13px}
+@media(max-width:800px){.burnReadout{top:auto;bottom:12px;right:12px;left:12px;width:auto}.burnControls{max-height:230px}
+
+/* 11.2: dark-blue burn laboratory */
+.burnLab{
+ background:
+ radial-gradient(circle at 50% 18%,#214a68 0,#132e43 35%,#091923 76%,#061119 100%)!important;
+ border-color:#28536e!important;
+ box-shadow:inset 0 0 90px #000a,0 15px 35px #0006!important
+}
+.burnWall{
+ background:
+ linear-gradient(#70b7de12 1px,transparent 1px),
+ linear-gradient(90deg,#70b7de12 1px,transparent 1px)!important;
+ background-size:70px 55px!important
+}
+.burnBench{
+ background:linear-gradient(180deg,#354a57 0 8%,#17232b 8% 18%,#0c151b 18% 100%)!important;
+ box-shadow:0 -9px 25px #0008!important
+}
+.burnControls,.burnReadout{
+ background:#081925e8!important;color:#e9f8ff!important;
+ border-color:#285b78!important;box-shadow:0 12px 28px #0007!important
+}
+.burnPicker button{
+ background:#102b3e!important;color:#dff5ff!important;border-color:#31698a!important
+}
+.burnPicker button:hover{background:#174461!important;border-color:#55b9ef!important}
+.dish{border-color:#738e9c!important;background:linear-gradient(#dbe8ee,#7e939e)!important;box-shadow:0 12px 20px #0008!important}
+.burner{background:linear-gradient(90deg,#3b4d58,#aebfc7 45%,#344852)!important;box-shadow:0 14px 22px #0009!important}
+
+
+/* 12.0 — interactive virtual measuring controls */
+.measurePanel{margin-top:12px;padding:12px;border:1px solid #285a75;border-radius:12px;background:#081925d9}
+.measureGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.measureBox{padding:10px;border:1px solid #234c64;border-radius:10px;background:#0c2231}
+.measureBox label{display:block;font-size:12px;color:#9fc4d9;margin-bottom:6px}.measureBox input[type=range]{width:100%;accent-color:#4db8ef}
+.qtyRead{font-weight:800;color:#dff7ff}.glassware{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.glassware button{padding:7px 9px;border-radius:8px;border:1px solid #31698a;background:#102b3e;color:#dff5ff;cursor:pointer}.glassware button.active{outline:2px solid #54c2fa;background:#174b69}
+.virtualBadge{display:inline-block;padding:4px 8px;border-radius:999px;background:#163d55;border:1px solid #32789e;color:#bfeaff;font-size:11px}
+
+/* 12.1 — burn area restored to dark blue */
+.burnLab{
+ background:radial-gradient(circle at 50% 18%,#214a68 0,#132e43 34%,#091923 74%,#061119 100%)!important;
+ border:1px solid #28536e!important;
+ box-shadow:inset 0 0 100px #000b,0 15px 35px #0007!important
+}
+.burnWall{
+ background:linear-gradient(#65add313 1px,transparent 1px),linear-gradient(90deg,#65add313 1px,transparent 1px)!important;
+ background-size:70px 55px!important;opacity:.7!important
+}
+.burnBench{background:linear-gradient(180deg,#334955 0 8%,#16242c 8% 18%,#0b151b 18% 100%)!important;box-shadow:0 -8px 28px #0009!important}
+.burnControls,.burnReadout{background:#071722ed!important;color:#e9f8ff!important;border-color:#2a5b76!important}
+.burnControls b,.burnReadout b{color:#f3fbff!important}.burnControls .muted,.burnReadout .muted{color:#94b7ca!important}
+.burnPicker button{background:#102b3e!important;color:#e5f7ff!important;border-color:#31698a!important}
+.burnPicker button:hover{background:#174762!important;border-color:#54bff5!important}
+
+/* 12.2 — force the virtual burn laboratory to dark blue */
+#view .burnLab{
+ background:radial-gradient(circle at 50% 20%,#173e5a 0%,#0d2a40 38%,#071a29 72%,#04111b 100%)!important;
+ color:#eaf8ff!important;
+}
+#view .burnLab .burnWall{
+ background:
+ linear-gradient(rgba(91,176,224,.08) 1px,transparent 1px),
+ linear-gradient(90deg,rgba(91,176,224,.08) 1px,transparent 1px)!important;
+ background-size:70px 55px!important;
+}
+#view .burnLab .burnBench{
+ background:linear-gradient(180deg,#294352 0 8%,#122633 8% 19%,#08151e 19% 100%)!important;
+}
+#view .burnLab .burnControls,#view .burnLab .burnReadout{
+ background:rgba(5,21,33,.94)!important;color:#edfaff!important;border-color:#2c6687!important;
+}
+#view .burnLab .burnPicker button{
+ background:#0c2940!important;color:#e8f8ff!important;border-color:#34799f!important;
+}
+
+/* 12.2.1 HOTFIX — burn page must never become white */
+html body #view .burnLab,
+html body .burnLab {
+  background: radial-gradient(circle at 50% 18%, #214f70 0%, #12344d 34%, #091f30 68%, #04121d 100%) !important;
+  background-color: #071a29 !important;
+  color: #eaf8ff !important;
+}
+html body #view .burnLab .burnWall,
+html body .burnLab .burnWall {
+  background:
+    linear-gradient(rgba(93,183,232,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(93,183,232,.08) 1px, transparent 1px) !important;
+  background-size: 70px 55px !important;
+  background-color: transparent !important;
+}
+html body #view .burnLab .burnBench,
+html body .burnLab .burnBench {
+  background: linear-gradient(180deg,#314b5a 0 8%,#142936 8% 20%,#08151e 20% 100%) !important;
+  background-color:#08151e !important;
+}
+html body #view .burnControls,
+html body #view .burnReadout {
+  background:#071925f2 !important;
+  color:#edfaff !important;
+  border-color:#316b8c !important;
+}
+html body #view .burnPicker button {
+  background:#102c41 !important;
+  color:#e8f8ff !important;
+  border-color:#36799e !important;
+}
+
+
+/* 12.2.2 — readable burn controls */
+html body #view .burnLab .burnControls,
+html body #view .burnLab .burnReadout{
+  background:#071925f2!important;
+  color:#eefaff!important;
+  border:1px solid #34799e!important;
+}
+html body #view .burnLab .burnControls b,
+html body #view .burnLab .burnReadout b{
+  color:#ffffff!important;
+}
+html body #view .burnLab .burnControls .muted,
+html body #view .burnLab .burnReadout .muted{
+  color:#a9c9db!important;
+}
+html body #view .burnLab .burnPicker button{
+  background:#102c41!important;
+  color:#eaf9ff!important;
+  border:1px solid #3a7fa5!important;
+}
+html body #view .burnLab .burnPicker button:hover{
+  background:#174a68!important;
+  color:#fff!important;
+}
+
+
+/* 12.2.3 — blue status text in burn readout */
+html body #view .burnLab .burnReadout b{
+  color:#38a9e8!important;
+}
+
+
+/* 12.2.4 — BURN MODE: NO WHITE SURFACES */
+html body #view .burnLab,
+html body #view .burnLab *{
+  box-sizing:border-box;
+}
+html body #view .burnLab{
+  background:#061b2b!important;
+  background-image:radial-gradient(circle at 50% 15%,#174a6a 0%,#0b3049 36%,#061b2b 72%,#03111c 100%)!important;
+  color:#dff5ff!important;
+  border-color:#255a79!important;
+}
+html body #view .burnLab .burnWall{
+  background-color:#061b2b!important;
+  background-image:
+    linear-gradient(rgba(70,158,210,.11) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(70,158,210,.11) 1px,transparent 1px)!important;
+  background-size:70px 55px!important;
+}
+html body #view .burnLab .burnBench{
+  background:#071823!important;
+  background-image:linear-gradient(180deg,#244658 0 9%,#102b3a 9% 20%,#071823 20% 100%)!important;
+}
+html body #view .burnLab .burnControls,
+html body #view .burnLab .burnReadout{
+  background:#082538!important;
+  background-color:#082538!important;
+  color:#9fdcff!important;
+  border:1px solid #2f7ca7!important;
+  box-shadow:0 12px 28px #0008!important;
+}
+html body #view .burnLab .burnControls b,
+html body #view .burnLab .burnReadout b{
+  color:#45b9f3!important;
+}
+html body #view .burnLab .burnControls .muted,
+html body #view .burnLab .burnReadout .muted{
+  color:#82c8ec!important;
+}
+html body #view .burnLab .burnPicker button{
+  background:#0d3852!important;
+  background-color:#0d3852!important;
+  color:#dff6ff!important;
+  border:1px solid #378bb8!important;
+}
+html body #view .burnLab .burnPicker button:hover{
+  background:#15587c!important;
+  color:#fff!important;
+}
+html body #view .burnLab .btn{
+  background:#0b3048!important;
+  color:#e7f8ff!important;
+  border-color:#3987af!important;
+}
+html body #view .burnLab .dish{
+  background:linear-gradient(#9db5c1,#536f7e)!important;
+  border-color:#6e9bb1!important;
+}
+html body #view .burnLab .burner{
+  background:linear-gradient(90deg,#263d4a,#8fa8b5 45%,#233945)!important;
+}
+/* explicit fallback: any generic cards accidentally placed in burn mode are blue */
+html body #view .burnLab .card{
+  background:#082538!important;
+  color:#bfeaff!important;
+  border-color:#2f7ca7!important;
+}
+
+
+/* 12.2.4a — project credits */
+.projectCredits{
+ margin:28px auto 14px;
+ max-width:980px;
+ padding:16px 22px;
+ text-align:center;
+ border-top:1px solid #2d6685;
+ color:#9bc7dd;
+ font-size:13px;
+ line-height:1.8;
+ letter-spacing:.2px;
+}
+.projectCredits strong{color:#dff6ff;font-weight:700}
+
+
+/* Digital reaction realism: reactive metal gradually disappears in water */
+.metalPiece{
+ position:absolute; left:50%; top:36%; width:24px; height:12px;
+ transform:translateX(-50%);
+ border-radius:45% 55% 50% 48%;
+ background:linear-gradient(145deg,#eef4f7,#9caab2 52%,#55636c);
+ box-shadow:0 2px 7px #0008, inset 2px 2px 3px #fff8;
+ opacity:0; z-index:8; pointer-events:none;
+}
+.metalPiece.reactWater{
+ opacity:1;
+ animation:metalDissolve 4.8s ease-in-out forwards;
+}
+@keyframes metalDissolve{
+ 0%{transform:translate(-50%,0) scale(1);opacity:1}
+ 18%{transform:translate(-35%,3px) scale(.92);opacity:1}
+ 38%{transform:translate(-65%,0) scale(.76);opacity:.96}
+ 58%{transform:translate(-28%,5px) scale(.57);opacity:.88}
+ 78%{transform:translate(-62%,2px) scale(.32);opacity:.62}
+ 100%{transform:translate(-42%,5px) scale(.05);opacity:0}
+}
+
+
+/* Realistic digital reaction effects */
+.realBeaker{overflow:hidden}
+#solid{position:absolute;inset:0;z-index:7;pointer-events:none}
+.solidSample.reactAway{animation:reactAway 4.6s ease-in-out forwards}
+@keyframes reactAway{
+  0%{transform:translate(0,0) scale(1);opacity:1}
+  25%{transform:translate(10px,-2px) scale(.86);opacity:1}
+  50%{transform:translate(-8px,2px) scale(.62);opacity:.9}
+  75%{transform:translate(7px,0) scale(.34);opacity:.65}
+  100%{transform:translate(-4px,3px) scale(.05);opacity:0}
+}
+.realPpt{transition:height 2.8s ease,background 1.2s ease;filter:blur(.15px)}
+.realPpt.forming{animation:pptCloud 2.8s ease-out}
+@keyframes pptCloud{
+  0%{opacity:.05;filter:blur(7px)}
+  45%{opacity:.75;filter:blur(3px)}
+  100%{opacity:1;filter:blur(0)}
+}
+.realLiquid{transition:background 2.2s ease,height 1s ease,filter 2s ease}
+.realLiquid.colorShift{animation:solutionShift 3.2s ease}
+@keyframes solutionShift{0%{filter:saturate(.6) brightness(1.15)}55%{filter:saturate(1.5)}100%{filter:none}}
+.metalCoating{
+ position:absolute;left:50%;bottom:19%;width:36px;height:16px;transform:translateX(-50%);
+ border-radius:45%;opacity:0;z-index:9;pointer-events:none;
+}
+.metalCoating.show{animation:coatGrow 4s ease forwards}
+@keyframes coatGrow{0%{opacity:0;transform:translateX(-50%) scale(.15)}100%{opacity:1;transform:translateX(-50%) scale(1)}}
+
+</style></head><body>
+<header><div class="brand">⚗ Qazaq <b>ChemLab 12.2.4</b></div><div class="nav">
+<button class="active" onclick="showMode('mix',this)">🧪 Араластыру</button><button onclick="showMode('burn',this)">🔥 Жану</button><button onclick="showMode('elements',this)">⚛ Элементтер</button><button onclick="showMode('indicators',this)">🎨 Индикаторлар</button>
+</div></header>
+<main><aside><input id="search" class="search" placeholder="Реактивті іздеу..." oninput="filterReagents()"><div id="cats"></div></aside>
+<section class="stage"><div id="view"></div></section><section class="right"><div class="card"><h3>📒 Тәжірибе журналы</h3><div id="log" class="muted">Әзірге тәжірибе жоқ.</div></div><div class="card"><h3>ℹ️ Қауіпсіз симуляция</h3><div class="muted">Бұл — мектеп химиясын оқуға арналған цифрлық модель. Нақты зертханалық әрекеттердің орнына экрандағы құбылыстар көрсетіледі.</div></div></section></main>
+<script>
+const groups={
+"💧 Су":[["H₂O","Су"]],
+"🧴 Қышқылдар":[["HCl","Тұз қышқылы"],["H₂SO₄","Күкірт қышқылы"],["HNO₃","Азот қышқылы"],["CH₃COOH","Сірке қышқылы"],["H₃PO₄","Фосфор қышқылы"],["H₂CO₃","Көмір қышқылы"],["H₂SO₃","Күкіртті қышқыл"]],
+"🧪 Негіздер / сілтілер":[["NaOH","Натрий гидроксиді"],["KOH","Калий гидроксиді"],["LiOH","Литий гидроксиді"],["Ca(OH)₂","Кальций гидроксиді"],["Ba(OH)₂","Барий гидроксиді"]],
+"🧂 Тұздар":[["NaCl","Натрий хлориді"],["KCl","Калий хлориді"],["LiCl","Литий хлориді"],["CaCl₂","Кальций хлориді"],["BaCl₂","Барий хлориді"],["CuSO₄","Мыс(II) сульфаты"],["FeSO₄","Темір(II) сульфаты"],["FeCl₃","Темір(III) хлориді"],["AgNO₃","Күміс нитраты"],["Na₂SO₄","Натрий сульфаты"],["Na₂CO₃","Натрий карбонаты"],["AlCl₃","Алюминий хлориді"],["ZnSO₄","Мырыш сульфаты"],["KI","Калий иодиді"],["Pb(NO₃)₂","Қорғасын(II) нитраты"],["CaCO₃","Кальций карбонаты"],["AgBr","Күміс бромиді"],["NaBr","Натрий бромиді"],["NaI","Натрий иодиді"],["SrCl₂","Стронций хлориді"],["CuCl₂","Мыс(II) хлориді"],["NiSO₄","Никель(II) сульфаты"],["CoCl₂","Кобальт(II) хлориді"],["KMnO₄","Калий перманганаты"],["K₂CrO₄","Калий хроматы"],["K₂Cr₂O₇","Калий дихроматы"]],
+"⬡ Элементтер":[["Li","Литий"],["Na","Натрий"],["K","Калий"],["Ca","Кальций"],["Mg","Магний"],["Al","Алюминий"],["Fe","Темір"],["Cu","Мыс"],["Zn","Мырыш"],["Ag","Күміс"],["C","Көміртек"],["S","Күкірт"]],
+"🎨 Индикаторлар":[["Litmus","Лакмус"],["Phenolphthalein","Фенолфталеин"],["MethylOrange","Метилоранж"],["Universal","Әмбебап индикатор"]]
+};
+
+const all118=[{"s":"H","n":"Сутек","z":1,"sh":[1],"fam":"Басқа элементтер"},{"s":"He","n":"Гелий","z":2,"sh":[2],"fam":"Асыл газдар"},{"s":"Li","n":"Литий","z":3,"sh":[2,1],"fam":"Сілтілік металдар"},{"s":"Be","n":"Бериллий","z":4,"sh":[2,2],"fam":"Сілтілік жер металдар"},{"s":"B","n":"Бор","z":5,"sh":[2,3],"fam":"Басқа элементтер"},{"s":"C","n":"Көміртек","z":6,"sh":[2,4],"fam":"Басқа элементтер"},{"s":"N","n":"Азот","z":7,"sh":[2,5],"fam":"Басқа элементтер"},{"s":"O","n":"Оттек","z":8,"sh":[2,6],"fam":"Халькогендер"},{"s":"F","n":"Фтор","z":9,"sh":[2,7],"fam":"Галогендер"},{"s":"Ne","n":"Неон","z":10,"sh":[2,8],"fam":"Асыл газдар"},{"s":"Na","n":"Натрий","z":11,"sh":[2,8,1],"fam":"Сілтілік металдар"},{"s":"Mg","n":"Магний","z":12,"sh":[2,8,2],"fam":"Сілтілік жер металдар"},{"s":"Al","n":"Алюминий","z":13,"sh":[2,8,3],"fam":"Басқа элементтер"},{"s":"Si","n":"Кремний","z":14,"sh":[2,8,4],"fam":"Басқа элементтер"},{"s":"P","n":"Фосфор","z":15,"sh":[2,8,5],"fam":"Басқа элементтер"},{"s":"S","n":"Күкірт","z":16,"sh":[2,8,6],"fam":"Халькогендер"},{"s":"Cl","n":"Хлор","z":17,"sh":[2,8,7],"fam":"Галогендер"},{"s":"Ar","n":"Аргон","z":18,"sh":[2,8,8],"fam":"Асыл газдар"},{"s":"K","n":"Калий","z":19,"sh":[2,8,8,1],"fam":"Сілтілік металдар"},{"s":"Ca","n":"Кальций","z":20,"sh":[2,8,8,2],"fam":"Сілтілік жер металдар"},{"s":"Sc","n":"Скандий","z":21,"sh":[2,8,9,2],"fam":"Ауыспалы металдар"},{"s":"Ti","n":"Титан","z":22,"sh":[2,8,10,2],"fam":"Ауыспалы металдар"},{"s":"V","n":"Ванадий","z":23,"sh":[2,8,11,2],"fam":"Ауыспалы металдар"},{"s":"Cr","n":"Хром","z":24,"sh":[2,8,12,2],"fam":"Ауыспалы металдар"},{"s":"Mn","n":"Марганец","z":25,"sh":[2,8,13,2],"fam":"Ауыспалы металдар"},{"s":"Fe","n":"Темір","z":26,"sh":[2,8,14,2],"fam":"Ауыспалы металдар"},{"s":"Co","n":"Кобальт","z":27,"sh":[2,8,15,2],"fam":"Ауыспалы металдар"},{"s":"Ni","n":"Никель","z":28,"sh":[2,8,16,2],"fam":"Ауыспалы металдар"},{"s":"Cu","n":"Мыс","z":29,"sh":[2,8,17,2],"fam":"Ауыспалы металдар"},{"s":"Zn","n":"Мырыш","z":30,"sh":[2,8,18,2],"fam":"Ауыспалы металдар"},{"s":"Ga","n":"Галлий","z":31,"sh":[2,8,18,3],"fam":"Басқа элементтер"},{"s":"Ge","n":"Германий","z":32,"sh":[2,8,18,4],"fam":"Басқа элементтер"},{"s":"As","n":"Мышьяк","z":33,"sh":[2,8,18,5],"fam":"Басқа элементтер"},{"s":"Se","n":"Селен","z":34,"sh":[2,8,18,6],"fam":"Халькогендер"},{"s":"Br","n":"Бром","z":35,"sh":[2,8,18,7],"fam":"Галогендер"},{"s":"Kr","n":"Криптон","z":36,"sh":[2,8,18,8],"fam":"Асыл газдар"},{"s":"Rb","n":"Рубидий","z":37,"sh":[2,8,18,8,1],"fam":"Сілтілік металдар"},{"s":"Sr","n":"Стронций","z":38,"sh":[2,8,18,8,2],"fam":"Сілтілік жер металдар"},{"s":"Y","n":"Иттрий","z":39,"sh":[2,8,18,9,2],"fam":"Ауыспалы металдар"},{"s":"Zr","n":"Цирконий","z":40,"sh":[2,8,18,10,2],"fam":"Ауыспалы металдар"},{"s":"Nb","n":"Ниобий","z":41,"sh":[2,8,18,11,2],"fam":"Ауыспалы металдар"},{"s":"Mo","n":"Молибден","z":42,"sh":[2,8,18,12,2],"fam":"Ауыспалы металдар"},{"s":"Tc","n":"Технеций","z":43,"sh":[2,8,18,13,2],"fam":"Ауыспалы металдар"},{"s":"Ru","n":"Рутений","z":44,"sh":[2,8,18,14,2],"fam":"Ауыспалы металдар"},{"s":"Rh","n":"Родий","z":45,"sh":[2,8,18,15,2],"fam":"Ауыспалы металдар"},{"s":"Pd","n":"Палладий","z":46,"sh":[2,8,18,16,2],"fam":"Ауыспалы металдар"},{"s":"Ag","n":"Күміс","z":47,"sh":[2,8,18,17,2],"fam":"Ауыспалы металдар"},{"s":"Cd","n":"Кадмий","z":48,"sh":[2,8,18,18,2],"fam":"Ауыспалы металдар"},{"s":"In","n":"Индий","z":49,"sh":[2,8,18,18,3],"fam":"Басқа элементтер"},{"s":"Sn","n":"Қалайы","z":50,"sh":[2,8,18,18,4],"fam":"Басқа элементтер"},{"s":"Sb","n":"Сурьма","z":51,"sh":[2,8,18,18,5],"fam":"Басқа элементтер"},{"s":"Te","n":"Теллур","z":52,"sh":[2,8,18,18,6],"fam":"Халькогендер"},{"s":"I","n":"Иод","z":53,"sh":[2,8,18,18,7],"fam":"Галогендер"},{"s":"Xe","n":"Ксенон","z":54,"sh":[2,8,18,18,8],"fam":"Асыл газдар"},{"s":"Cs","n":"Цезий","z":55,"sh":[2,8,18,18,8,1],"fam":"Сілтілік металдар"},{"s":"Ba","n":"Барий","z":56,"sh":[2,8,18,18,8,2],"fam":"Сілтілік жер металдар"},{"s":"La","n":"Лантан","z":57,"sh":[2,8,18,19,8,2],"fam":"Лантаноидтар"},{"s":"Ce","n":"Церий","z":58,"sh":[2,8,18,20,8,2],"fam":"Лантаноидтар"},{"s":"Pr","n":"Празеодим","z":59,"sh":[2,8,18,21,8,2],"fam":"Лантаноидтар"},{"s":"Nd","n":"Неодим","z":60,"sh":[2,8,18,22,8,2],"fam":"Лантаноидтар"},{"s":"Pm","n":"Прометий","z":61,"sh":[2,8,18,23,8,2],"fam":"Лантаноидтар"},{"s":"Sm","n":"Самарий","z":62,"sh":[2,8,18,24,8,2],"fam":"Лантаноидтар"},{"s":"Eu","n":"Еуропий","z":63,"sh":[2,8,18,25,8,2],"fam":"Лантаноидтар"},{"s":"Gd","n":"Гадолиний","z":64,"sh":[2,8,18,26,8,2],"fam":"Лантаноидтар"},{"s":"Tb","n":"Тербий","z":65,"sh":[2,8,18,27,8,2],"fam":"Лантаноидтар"},{"s":"Dy","n":"Диспрозий","z":66,"sh":[2,8,18,28,8,2],"fam":"Лантаноидтар"},{"s":"Ho","n":"Гольмий","z":67,"sh":[2,8,18,29,8,2],"fam":"Лантаноидтар"},{"s":"Er","n":"Эрбий","z":68,"sh":[2,8,18,30,8,2],"fam":"Лантаноидтар"},{"s":"Tm","n":"Тулий","z":69,"sh":[2,8,18,31,8,2],"fam":"Лантаноидтар"},{"s":"Yb","n":"Иттербий","z":70,"sh":[2,8,18,32,8,2],"fam":"Лантаноидтар"},{"s":"Lu","n":"Лютеций","z":71,"sh":[2,8,18,32,9,2],"fam":"Лантаноидтар"},{"s":"Hf","n":"Гафний","z":72,"sh":[2,8,18,32,10,2],"fam":"Ауыспалы металдар"},{"s":"Ta","n":"Тантал","z":73,"sh":[2,8,18,32,11,2],"fam":"Ауыспалы металдар"},{"s":"W","n":"Вольфрам","z":74,"sh":[2,8,18,32,12,2],"fam":"Ауыспалы металдар"},{"s":"Re","n":"Рений","z":75,"sh":[2,8,18,32,13,2],"fam":"Ауыспалы металдар"},{"s":"Os","n":"Осмий","z":76,"sh":[2,8,18,32,14,2],"fam":"Ауыспалы металдар"},{"s":"Ir","n":"Иридий","z":77,"sh":[2,8,18,32,15,2],"fam":"Ауыспалы металдар"},{"s":"Pt","n":"Платина","z":78,"sh":[2,8,18,32,16,2],"fam":"Ауыспалы металдар"},{"s":"Au","n":"Алтын","z":79,"sh":[2,8,18,32,17,2],"fam":"Ауыспалы металдар"},{"s":"Hg","n":"Сынап","z":80,"sh":[2,8,18,32,18,2],"fam":"Ауыспалы металдар"},{"s":"Tl","n":"Таллий","z":81,"sh":[2,8,18,32,18,3],"fam":"Басқа элементтер"},{"s":"Pb","n":"Қорғасын","z":82,"sh":[2,8,18,32,18,4],"fam":"Басқа элементтер"},{"s":"Bi","n":"Висмут","z":83,"sh":[2,8,18,32,18,5],"fam":"Басқа элементтер"},{"s":"Po","n":"Полоний","z":84,"sh":[2,8,18,32,18,6],"fam":"Халькогендер"},{"s":"At","n":"Астат","z":85,"sh":[2,8,18,32,18,7],"fam":"Галогендер"},{"s":"Rn","n":"Радон","z":86,"sh":[2,8,18,32,18,8],"fam":"Асыл газдар"},{"s":"Fr","n":"Франций","z":87,"sh":[2,8,18,32,18,8,1],"fam":"Сілтілік металдар"},{"s":"Ra","n":"Радий","z":88,"sh":[2,8,18,32,18,8,2],"fam":"Сілтілік жер металдар"},{"s":"Ac","n":"Актиний","z":89,"sh":[2,8,18,32,19,8,2],"fam":"Актиноидтар"},{"s":"Th","n":"Торий","z":90,"sh":[2,8,18,32,20,8,2],"fam":"Актиноидтар"},{"s":"Pa","n":"Протактиний","z":91,"sh":[2,8,18,32,21,8,2],"fam":"Актиноидтар"},{"s":"U","n":"Уран","z":92,"sh":[2,8,18,32,22,8,2],"fam":"Актиноидтар"},{"s":"Np","n":"Нептуний","z":93,"sh":[2,8,18,32,23,8,2],"fam":"Актиноидтар"},{"s":"Pu","n":"Плутоний","z":94,"sh":[2,8,18,32,24,8,2],"fam":"Актиноидтар"},{"s":"Am","n":"Америций","z":95,"sh":[2,8,18,32,25,8,2],"fam":"Актиноидтар"},{"s":"Cm","n":"Кюрий","z":96,"sh":[2,8,18,32,26,8,2],"fam":"Актиноидтар"},{"s":"Bk","n":"Берклий","z":97,"sh":[2,8,18,32,27,8,2],"fam":"Актиноидтар"},{"s":"Cf","n":"Калифорний","z":98,"sh":[2,8,18,32,28,8,2],"fam":"Актиноидтар"},{"s":"Es","n":"Эйнштейний","z":99,"sh":[2,8,18,32,29,8,2],"fam":"Актиноидтар"},{"s":"Fm","n":"Фермий","z":100,"sh":[2,8,18,32,30,8,2],"fam":"Актиноидтар"},{"s":"Md","n":"Менделевий","z":101,"sh":[2,8,18,32,31,8,2],"fam":"Актиноидтар"},{"s":"No","n":"Нобелий","z":102,"sh":[2,8,18,32,32,8,2],"fam":"Актиноидтар"},{"s":"Lr","n":"Лоуренсий","z":103,"sh":[2,8,18,32,32,9,2],"fam":"Актиноидтар"},{"s":"Rf","n":"Резерфордий","z":104,"sh":[2,8,18,32,32,10,2],"fam":"Ауыспалы металдар"},{"s":"Db","n":"Дубний","z":105,"sh":[2,8,18,32,32,11,2],"fam":"Ауыспалы металдар"},{"s":"Sg","n":"Сиборгий","z":106,"sh":[2,8,18,32,32,12,2],"fam":"Ауыспалы металдар"},{"s":"Bh","n":"Борий","z":107,"sh":[2,8,18,32,32,13,2],"fam":"Ауыспалы металдар"},{"s":"Hs","n":"Хассий","z":108,"sh":[2,8,18,32,32,14,2],"fam":"Ауыспалы металдар"},{"s":"Mt","n":"Мейтнерий","z":109,"sh":[2,8,18,32,32,15,2],"fam":"Ауыспалы металдар"},{"s":"Ds","n":"Дармштадтий","z":110,"sh":[2,8,18,32,32,16,2],"fam":"Ауыспалы металдар"},{"s":"Rg","n":"Рентгений","z":111,"sh":[2,8,18,32,32,17,2],"fam":"Ауыспалы металдар"},{"s":"Cn","n":"Коперниций","z":112,"sh":[2,8,18,32,32,18,2],"fam":"Ауыспалы металдар"},{"s":"Nh","n":"Нихоний","z":113,"sh":[2,8,18,32,32,18,3],"fam":"Басқа элементтер"},{"s":"Fl","n":"Флеровий","z":114,"sh":[2,8,18,32,32,18,4],"fam":"Басқа элементтер"},{"s":"Mc","n":"Московий","z":115,"sh":[2,8,18,32,32,18,5],"fam":"Басқа элементтер"},{"s":"Lv","n":"Ливерморий","z":116,"sh":[2,8,18,32,32,18,6],"fam":"Халькогендер"},{"s":"Ts","n":"Теннессин","z":117,"sh":[2,8,18,32,32,18,7],"fam":"Галогендер"},{"s":"Og","n":"Оганесон","z":118,"sh":[2,8,18,32,32,18,8],"fam":"Асыл газдар"}];
+const elements=[
+["H","Сутек",1,1.008,[1],"1s¹","#e9f5ff","Бейметалл","—"],
+["He","Гелий",2,4.003,[2],"1s²","#d8f4ff","Инертті газ","—"],
+["Li","Литий",3,6.94,[2,1],"1s² 2s¹","#c8c8c8","Сілтілік металл","кармин-қызыл"],
+["Be","Бериллий",4,9.012,[2,2],"1s² 2s²","#b9c3c7","Сілтілік-жер металы","—"],
+["B","Бор",5,10.81,[2,3],"1s² 2s² 2p¹","#403b36","Металлоид","—"],
+["C","Көміртек",6,12.011,[2,4],"1s² 2s² 2p²","#242424","Бейметалл","—"],
+["N","Азот",7,14.007,[2,5],"1s² 2s² 2p³","#dbeeff","Бейметалл","—"],
+["O","Оттек",8,15.999,[2,6],"1s² 2s² 2p⁴","#ccecff","Бейметалл","—"],
+["F","Фтор",9,18.998,[2,7],"1s² 2s² 2p⁵","#e5e08a","Галоген","—"],
+["Ne","Неон",10,20.180,[2,8],"1s² 2s² 2p⁶","#dff5ff","Инертті газ","—"],
+["Na","Натрий",11,22.990,[2,8,1],"1s² 2s² 2p⁶ 3s¹","#d1d1cf","Сілтілік металл","ашық сары"],
+["Mg","Магний",12,24.305,[2,8,2],"1s² 2s² 2p⁶ 3s²","#c8cbd0","Сілтілік-жер металы","—"],
+["Al","Алюминий",13,26.982,[2,8,3],"1s² 2s² 2p⁶ 3s² 3p¹","#bfc4c7","Металл","—"],
+["Si","Кремний",14,28.085,[2,8,4],"1s² 2s² 2p⁶ 3s² 3p²","#555b62","Металлоид","—"],
+["P","Фосфор",15,30.974,[2,8,5],"1s² 2s² 2p⁶ 3s² 3p³","#8d1c20","Бейметалл","—"],
+["S","Күкірт",16,32.06,[2,8,6],"1s² 2s² 2p⁶ 3s² 3p⁴","#e7d529","Бейметалл","—"],
+["Cl","Хлор",17,35.45,[2,8,7],"1s² 2s² 2p⁶ 3s² 3p⁵","#b7c94c","Галоген","—"],
+["Ar","Аргон",18,39.948,[2,8,8],"1s² 2s² 2p⁶ 3s² 3p⁶","#d8edff","Инертті газ","—"],
+["K","Калий",19,39.098,[2,8,8,1],"[Ar] 4s¹","#b7b8bd","Сілтілік металл","күлгін"],
+["Ca","Кальций",20,40.078,[2,8,8,2],"[Ar] 4s²","#b9bec1","Сілтілік-жер металы","кірпіш-қызыл"],
+["Fe","Темір",26,55.845,[2,8,14,2],"[Ar] 3d⁶ 4s²","#777d80","Өтпелі металл","—"],
+["Cu","Мыс",29,63.546,[2,8,18,1],"[Ar] 3d¹⁰ 4s¹","#b9693d","Өтпелі металл","көкшіл-жасыл (кей қосылыстары)"],
+["Zn","Мырыш",30,65.38,[2,8,18,2],"[Ar] 3d¹⁰ 4s²","#aeb7bd","Өтпелі металл","—"],
+["Ag","Күміс",47,107.868,[2,8,18,18,1],"[Kr] 4d¹⁰ 5s¹","#d9dce0","Өтпелі металл","—"],
+["Ba","Барий",56,137.327,[2,8,18,18,8,2],"[Xe] 6s²","#aeb3b5","Сілтілік-жер металы","алма-жасыл"]
+];
+const acidSet=new Set(["HCl","H₂SO₄","HNO₃","CH₃COOH","H₃PO₄","H₂CO₃","H₂SO₃"]);
+const baseSet=new Set(["NaOH","KOH","LiOH","Ca(OH)₂","Ba(OH)₂"]);
+const indicators=new Set(["Litmus","Phenolphthalein","MethylOrange","Universal"]);
+const indicatorNames={"Litmus":"Лакмус","Phenolphthalein":"Фенолфталеин","MethylOrange":"Метилоранж","Universal":"Әмбебап индикатор"};
+function indicatorResult(ind,medium){
+ const map={
+  acid:{Litmus:["қызыл","#df3348"],Phenolphthalein:["түссіз","#dff4ff22"],MethylOrange:["қызыл","#ef3e3e"],Universal:["қызыл/қызғылт-сары","#ef553d"]},
+  neutral:{Litmus:["күлгін","#8d61d9"],Phenolphthalein:["түссіз","#dff4ff22"],MethylOrange:["қызғылт-сары","#ef8b32"],Universal:["жасыл","#39b86b"]},
+  base:{Litmus:["көк","#3288e8"],Phenolphthalein:["қызғылт","#e64b9b"],MethylOrange:["сары","#f0cf36"],Universal:["көк/күлгін","#5c62db"]}
+ }; return map[medium][ind];
+}
+const reactions={
+"CuSO₄|NaOH": ["CuSO₄ + 2NaOH → Cu(OH)₂↓ + Na₂SO₄","Көк Cu(OH)₂ тұнбасы","#258ce5","precip"],
+"FeSO₄|NaOH":["FeSO₄ + 2NaOH → Fe(OH)₂↓ + Na₂SO₄","Жасылдау тұнба","#718f58","precip"],
+"FeCl₃|NaOH":["FeCl₃ + 3NaOH → Fe(OH)₃↓ + 3NaCl","Қызыл-қоңыр тұнба","#8c4d32","precip"],
+"AgNO₃|NaCl":["AgNO₃ + NaCl → AgCl↓ + NaNO₃","Ақ тұнба","#eee","precip"],
+"BaCl₂|Na₂SO₄":["BaCl₂ + Na₂SO₄ → BaSO₄↓ + 2NaCl","Ақ тұнба","#f3f3f3","precip"],
+"AlCl₃|NaOH":["AlCl₃ + 3NaOH → Al(OH)₃↓ + 3NaCl","Ақ тұнба","#eee","precip"],
+"Na₂CO₃|HCl":["Na₂CO₃ + 2HCl → 2NaCl + H₂O + CO₂↑","Газ көпіршіктері (CO₂)","#fff","gas"],
+"HCl|CaCO₃":["2HCl + CaCO₃ → CaCl₂ + H₂O + CO₂↑","Газ бөлінеді (CO₂)","#fff","gas"],
+"HCl|NaOH":["HCl + NaOH → NaCl + H₂O","Бейтараптану","transparent","neutral"],
+"HCl|KOH":["HCl + KOH → KCl + H₂O","Бейтараптану","transparent","neutral"],
+"H₂SO₄|NaOH":["H₂SO₄ + 2NaOH → Na₂SO₄ + 2H₂O","Бейтараптану","transparent","neutral"],
+"HNO₃|NaOH":["HNO₃ + NaOH → NaNO₃ + H₂O","Бейтараптану","transparent","neutral"],
+"HCl|Zn":["Zn + 2HCl → ZnCl₂ + H₂↑","Сутек газының көпіршіктері","#fff","gas"],
+"AgNO₃|HCl":["AgNO₃ + HCl → AgCl↓ + HNO₃","Ақ AgCl тұнбасы","#eee","precip"],
+"BaCl₂|H₂SO₄":["BaCl₂ + H₂SO₄ → BaSO₄↓ + 2HCl","Ақ BaSO₄ тұнбасы","#f3f3f3","precip"],
+"ZnSO₄|NaOH":["ZnSO₄ + 2NaOH → Zn(OH)₂↓ + Na₂SO₄","Ақ Zn(OH)₂ тұнбасы","#eee","precip"],
+"Pb(NO₃)₂|KI":["Pb(NO₃)₂ + 2KI → PbI₂↓ + 2KNO₃","Сары PbI₂ тұнбасы","#f3cf32","precip"],
+"Li|H₂O":["2Li + 2H₂O → 2LiOH + H₂↑","Газ көпіршіктері; сілті түзіледі","#fff","gas"],
+"Na|H₂O":["2Na + 2H₂O → 2NaOH + H₂↑","Газ көпіршіктері; сілті түзіледі","#fff","gas"],
+"K|H₂O":["2K + 2H₂O → 2KOH + H₂↑","Газ көпіршіктері; сілті түзіледі","#fff","gas"],
+"Ca|H₂O":["Ca + 2H₂O → Ca(OH)₂ + H₂↑","Газ бөлінеді, ерітінді лайлануы мүмкін","#eee","gas"],
+"CH₃COOH|NaOH":["CH₃COOH + NaOH → CH₃COONa + H₂O","Бейтараптану","transparent","neutral"],
+"H₃PO₄|NaOH":["H₃PO₄ + 3NaOH → Na₃PO₄ + 3H₂O","Бейтараптану","transparent","neutral"],
+"H₂SO₃|NaOH":["H₂SO₃ + 2NaOH → Na₂SO₃ + 2H₂O","Бейтараптану","transparent","neutral"],
+"CaCl₂|Na₂CO₃":["CaCl₂ + Na₂CO₃ → CaCO₃↓ + 2NaCl","Ақ CaCO₃ тұнбасы","#eee","precip"],
+"AgNO₃|KI":["AgNO₃ + KI → AgI↓ + KNO₃","Сары AgI тұнбасы","#e5cf43","precip"],
+"CuSO₄|Fe":["Fe + CuSO₄ → FeSO₄ + Cu","Орынбасу реакциясы: мыс бөлінеді","#b96b43","precip"],
+"CuSO₄|Zn":["Zn + CuSO₄ → ZnSO₄ + Cu","Орынбасу реакциясы: мыс бөлінеді","#b96b43","precip"]
+};
+let chosen=[], mode="mix";
+function renderCats(){
+ let c=document.getElementById("cats"); c.innerHTML="";
+ Object.entries(groups).forEach(([g,arr],i)=>{let d=document.createElement("div");d.className="cat";d.innerHTML=`<div class="cathead" onclick="toggleCat(this)"><span>${g}</span><span>⌄</span></div><div class="catbody">${arr.map(x=>`<div class="reagent" data-search="${x.join(" ").toLowerCase()}" onclick="pick('${x[0]}','${x[1]}')"><b>${x[0]}</b><br><small>${x[1]}</small></div>`).join("")}</div>`;c.appendChild(d)})
+}
+function toggleCat(h){let p=h.parentElement;document.querySelectorAll(".cat").forEach(x=>{if(x!==p)x.classList.remove("open")});p.classList.toggle("open")}
+function filterReagents(){let q=document.getElementById("search").value.toLowerCase();document.querySelectorAll(".reagent").forEach(x=>x.style.display=x.dataset.search.includes(q)?"block":"none")}
+function showMode(m,b){mode=m;chosen=[];document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");render()}
+function render(){
+ const v=document.getElementById("view");
+ if(mode==="mix") v.innerHTML=`<div class="title">🧪 Виртуалды зертхана</div><div class="sub">Реактивтерді таңдаңыз: шыны ыдыс, ерітінді, тұнба, газ және түс өзгерістері цифрлық түрде анимацияланады.</div>
+<div class="lab realistic"><div class=labwall></div><div class=shelf></div><div class=bench></div>
+<div id="sel" class="card" style="position:absolute;z-index:5;left:18px;top:18px;max-width:390px;background:#08141ddd">Таңдалған реактивтер: <b>жоқ</b>
+</div>
+
+<div class=realBeaker><div id=liq class="realLiquid"></div><div id=solid></div><div id=ppt class=realPpt></div><div id=bub class=realBubbles></div><div id=metalCoating class=metalCoating></div></div>
+<div id=smoke class=smoke></div>
+<div class="controls" style="z-index:8"><button class=btn onclick="runReaction()">▶ Реакцияны бақылау</button><button class=btn onclick="resetLab()">↻ Тазалау</button></div><div class=labtag>Qazaq ChemLab · digital simulation</div></div>
+<div id=result class=card style="margin-top:14px"><h3>Нәтиже</h3><span class=muted>Екі реактив таңдаңыз.</span></div>`;
+ else if(mode==="elements") renderElements(v);
+ else if(mode==="burn") v.innerHTML=`<div class="title">🔥 Жану</div>
+<div class=burnLab style="background:#071a29;color:#eaf8ff"><div class=burnWall></div><div class=burnBench></div>
+<div class=burnControls style="background:#082538;color:#9fdcff"><b>Элемент</b><div class=burnPicker>${["Li","Na","K","Ca","Mg","Sr","Ba","Cu","Fe","C","S"].map(s=>`<button onclick="selectBurn('${s}')">${s}</button>`).join("")}</div><div style="margin-top:10px"><button class=btn onclick="igniteSelected()">🔥 Жағу</button> <button class=btn onclick="stopBurn()">■ Өшіру</button></div></div>
+<div id=burnReadout class=burnReadout style="background:#082538;color:#45b9f3"><b>Элемент таңдаңыз</b></div>
+<div class=burnStage><div class=dish></div><div id=burnSample class=burnSample></div><div id=bigFlame class=bigFlame></div><div id=sparks></div><div class=burner></div></div></div>`;
+ else v.innerHTML=`<div class="title">🎨 Индикаторлар</div><div class="sub">Индикатор түсіне қарап ортаны анықтау анықтамалығы.</div><div class="card"><h3>Лакмус</h3>Қышқыл — 🔴 қызыл · Бейтарап — 🟣 күлгін · Сілтілік — 🔵 көк</div><div class="card"><h3>Фенолфталеин</h3>Қышқыл/бейтарап — түссіз · Сілтілік — 🩷 қызғылт</div><div class="card"><h3>Метилоранж</h3>Қышқыл — 🔴 қызыл · Бейтарап — 🟠 қызғылт-сары · Сілтілік — 🟡 сары</div><div class="card"><h3>Әмбебап индикатор</h3>Қышқыл — қызыл/қызғылт-сары · Бейтарап — жасыл · Сілтілік — көк/күлгін</div>`;
+}
+
+const elementState={
+"Li":["solid","#c9c9c9"],"Na":["solid","#d3d3d0"],"K":["solid","#b8b8bd"],"Ca":["solid","#bfc3c5"],
+"Mg":["solid","#c9cdd0"],"Al":["solid","#c3c7ca"],"Fe":["solid","#747a7d"],"Cu":["solid","#b96b43"],
+"Zn":["solid","#adb7bd"],"Ag":["solid","#e0e2e5"],"C":["solid","#252525"],"S":["powder","#e5d128"]
+};
+function isElement(f){return !!elementState[f]}
+function drawElement(f,n){
+ let host=document.getElementById("solid"); if(!host)return;
+ let st=elementState[f], cls=st[0]==="powder"?"powderSample":"solidSample";
+ host.innerHTML=`<div class="${cls}" style="background:linear-gradient(135deg,#fff7,${st[1]},#0008),${st[1]}"></div><div class="elementLabel">${f} · ${n}</div>`;
+}
+
+function pick(f,n){
+ if(mode==="elements"||mode==="burn"){let e=elements.find(x=>x[0]===f);if(e){mode==="burn"?flameTest(e):detail(e)}return}
+ /* Индикатор араластыру зертханасында ерітіндіге тікелей қосылады. */
+ if(chosen.length<3)chosen.push([f,n]); else chosen=[chosen[1],chosen[2],[f,n]];
+ document.getElementById("sel").innerHTML="Таңдалған: "+chosen.map(x=>`<span class=chip>${x[0]} · ${x[1]}</span>`).join(""); let dr=document.getElementById("drop"); if(dr){dr.classList.remove("go");void dr.offsetWidth;dr.classList.add("go");}
+ let liquids=chosen.filter(x=>!isElement(x[0])&&!indicators.has(x[0])).length;
+ let liq=document.getElementById("liq"); if(liq) liq.style.height=(liquids*32)+"%";
+ let el=chosen.find(x=>isElement(x[0]));
+ if(el) drawElement(el[0],el[1]); else {let s=document.getElementById("solid"); if(s)s.innerHTML="";}
+}
+function key(){let chem=chosen.filter(x=>!indicators.has(x[0]));if(chem.length<2)return"";let a=chem[0][0],b=chem[1][0];return reactions[a+"|"+b]?a+"|"+b:(reactions[b+"|"+a]?b+"|"+a:"")}
+function runReaction(){ setTimeout(qclMetalWaterVisual,60);
+ let out=document.getElementById("result"), ind=chosen.find(x=>indicators.has(x[0]));
+ let chem=chosen.filter(x=>!indicators.has(x[0]));
+ if(ind && chem.length>=1){
+   let medium=acidSet.has(chem[0][0])?"acid":baseSet.has(chem[0][0])?"base":"neutral";
+   // If an acid and a base are both present, treat the simple classroom model as neutral after neutralisation.
+   if(chem.some(x=>acidSet.has(x[0])) && chem.some(x=>baseSet.has(x[0]))) medium="neutral";
+   let ir=indicatorResult(ind[0],medium), liq=document.getElementById("liq");
+   if(liq){liq.style.background=ir[1];liq.style.height=Math.max(32,chem.filter(x=>!isElement(x[0])).length*32)+"%";}
+   out.innerHTML=`<h3>🎨 ${indicatorNames[ind[0]]}: ${ir[0]}</h3><b>Орта: ${medium==="acid"?"қышқыл":medium==="base"?"сілтілік":"бейтарап"}</b><br><span class=muted>Индикатор қосылғанда ерітіндінің цифрлық түсі өзгерді.</span>`;
+   document.getElementById("log").innerHTML=`${indicatorNames[ind[0]]} → <b>${ir[0]}</b>`;
+   return;
+ }
+ let r=reactions[key()];
+ if(!r){
+   let a=chem[0]?.[0], b=chem[1]?.[0];
+   // General classroom rules: acid + base, acid + carbonate, selected active metal + acid.
+   if((acidSet.has(a)&&baseSet.has(b))||(acidSet.has(b)&&baseSet.has(a))){
+      out.innerHTML=`<h3>💧 Бейтараптану</h3><b>Қышқыл + негіз → тұз + су</b><br>Цифрлық мөлшер: ${virtualQty[0]} + ${virtualQty[1]} бөлік · ${virtualVessel}<br><span class=muted>Ерітінді ортасы бейтарапқа жақындайды.</span>`; document.getElementById("liq").style.background="#73c9e855"; return;
+   }
+   if((acidSet.has(a)&&b==="Na₂CO₃")||(acidSet.has(b)&&a==="Na₂CO₃")||(acidSet.has(a)&&b==="CaCO₃")||(acidSet.has(b)&&a==="CaCO₃")){
+      out.innerHTML="<h3>💨 Газ бөлінуі</h3><b>Қышқыл + карбонат → тұз + су + CO₂↑</b>";let bb=document.getElementById("bub");bb.innerHTML=Array.from({length:20},(_,i)=>`<i style="left:${8+(i*17)%85}%;width:${8+i%7}px;height:${8+i%7}px;animation-delay:${(i%6)*.2}s"></i>`).join("");return;
+   }
+   let active=["Li","Na","K","Ca","Mg","Al","Zn","Fe"];
+   if((acidSet.has(a)&&active.includes(b))||(acidSet.has(b)&&active.includes(a))){
+      out.innerHTML="<h3>💨 Металл + қышқыл</h3><b>Цифрлық модельде газ бөлінуі көрсетіледі.</b>";
+      let ss=document.querySelector("#solid .solidSample");if(ss){ss.classList.remove("reactAway");void ss.offsetWidth;ss.classList.add("reactAway");}let bb=document.getElementById("bub");bb.innerHTML=Array.from({length:18},(_,i)=>`<i style="left:${10+(i*13)%80}%;width:10px;height:10px;animation-delay:${(i%7)*.16}s"></i>`).join("");return;
+   }
+   out.innerHTML="<h3>⏸ Реакция байқалмайды</h3><span class=muted>Таңдалған жағдайда мектептік модель бойынша айқын газ, тұнба немесе түс өзгерісі көрсетілмейді. Бағдарлама химияда болмайтын реакцияны ойдан жасамайды.</span>";
+   return;
+ }
+ realisticReactionFX(key(),r);
+ out.innerHTML=`<h3>${r[1]}</h3><b>${r[0]}</b>`;
+ if(r[3]==="precip"){let p=document.getElementById("ppt");p.style.background=r[2];p.style.height="25%"}
+ if(r[3]==="gas"){let b=document.getElementById("bub");b.innerHTML=Array.from({length:22},(_,i)=>`<i style="left:${8+(i*13)%85}%;width:${7+i%8}px;height:${7+i%8}px;animation-delay:${(i%7)*.18}s"></i>`).join("");let s=document.getElementById("smoke");if(s)s.innerHTML=Array.from({length:7},(_,i)=>`<i style="left:${i*17}px;animation-delay:${i*.35}s"></i>`).join("")}
+ document.getElementById("log").innerHTML=`<b>${r[0]}</b><br>${r[1]}`;
+}
+function resetLab(){chosen=[];render()}
+function renderElements(v){
+ v.innerHTML=`<div class=title>⚛ 118 элемент</div><div class=sub>Элементтер химиялық отбасылар бойынша сүзгіленеді. Карточканы ашқанда атом құрылысы мен қабаттардағы электрон саны көрсетіледі.</div>
+ <div class=familybar>${["Барлығы","Асыл газдар","Галогендер","Сілтілік металдар","Сілтілік жер металдар","Ауыспалы металдар","Халькогендер","Лантаноидтар","Актиноидтар"].map(f=>`<button onclick="filterFamily('${f}')">${f}</button>`).join("")}</div>
+ <div class=legend><span>🟦 Асыл газдар</span><span>🟩 Галогендер</span><span>🟨 Сілтілік металдар</span><span>🟧 Сілтілік жер металдар</span><span>🟥 Ауыспалы металдар</span><span>🟪 Халькогендер</span></div>
+ <div id=elementGrid>${all118.map(e=>`<div class=el data-family="${e.fam}" onclick='detail118(${e.z})'><strong>${e.s}</strong><small>${e.z} · ${e.n}</small></div>`).join("")}</div><div id=edetail style="margin-top:16px"></div>`;
+}
+function filterFamily(f){document.querySelectorAll("#elementGrid .el").forEach(x=>x.style.display=(f==="Барлығы"||x.dataset.family===f)?"block":"none")}
+function detail118(z){
+ let e=all118[z-1], d=document.getElementById("edetail");
+ let pseudo=[e.s,e.n,e.z,e.z,e.sh,"Қабаттар бойынша: "+e.sh.join(", "),"#aeb7bd",e.fam,"—"];
+ d.innerHTML=`<div style="display:grid;grid-template-columns:minmax(240px,1fr) minmax(280px,1fr);gap:14px"><div class=card><h3>${e.n} (${e.s})</h3><p><b>Реттік нөмірі:</b> ${e.z}<br><b>Электрон саны (бейтарап атом):</b> ${e.z}<br><b>Тобы:</b> ${e.fam}<br><b>Электрондық деңгей саны:</b> ${e.sh.length}<br><b>Қабаттар:</b> ${e.sh.join(" · ")}</p></div><div class=card><h3>Атом құрылысы</h3>${atomHTML(pseudo)}<b>Ядро:</b> ${e.z} протон<br><b>Бейтарап атом:</b> ${e.z} электрон<br><b>Қабаттар:</b> ${e.sh.map((x,i)=>`${["K","L","M","N","O","P","Q"][i]}: ${x}`).join(" | ")}</div></div>`;
+}
+function atomHTML(e){let max=260;return `<div class=atom><div class=nucleus></div>${e[4].map((cnt,s)=>{let size=90+s*38;let dots=Array.from({length:cnt},(_,i)=>{let a=2*Math.PI*i/cnt,x=size/2+Math.cos(a)*size/2-4.5,y=size/2+Math.sin(a)*size/2-4.5;return `<i class=electron style="left:${x}px;top:${y}px"></i>`}).join("");return `<div class=shell style="width:${size}px;height:${size}px;margin-left:${-size/2}px;margin-top:${-size/2}px">${dots}</div>`}).join("")}</div>`}
+function detail(e){let d=document.getElementById("edetail");if(!d){mode="elements";render();d=document.getElementById("edetail")}d.innerHTML=`<div style="display:grid;grid-template-columns:minmax(240px,1fr) minmax(280px,1fr);gap:14px"><div class=card><h3>${e[1]} (${e[0]})</h3><div class=sample><div class=chunk style="background:linear-gradient(135deg,#fff8,${e[6]},#0007),${e[6]}"></div></div><p class=muted>Сыртқы көрінісінің цифрлық үлгісі (нақты фотосурет емес).</p><b>Реттік нөмірі:</b> ${e[2]}<br><b>Салыстырмалы атомдық массасы:</b> ${e[3]}<br><b>Түрі:</b> ${e[7]}<br><b>Жалын белгісі:</b> ${e[8]}</div><div class=card><h3>Электрондық құрылыс</h3>${atomHTML(e)}<b>Электрон саны:</b> ${e[2]}<br><b>Электрондық деңгей саны:</b> ${e[4].length}<br><b>Қабаттар:</b> ${e[4].join(" · ")}<br><b>Конфигурация:</b> ${e[5]}</div></div>`}
+let selectedBurn=null;
+const burnInfo={
+ Li:{name:"Литий",sample:"#c9c9c9",flame:"#e63845",core:"#ffd0d5",text:"кармин-қызыл",kind:"Жалын сынағында Li⁺ тән түс береді."},
+ Na:{name:"Натрий",sample:"#d3d3d0",flame:"#ffd326",core:"#fff7a8",text:"ашық сары",kind:"Жалын сынағында Na⁺ өте айқын сары түс береді."},
+ K:{name:"Калий",sample:"#b8b8bd",flame:"#ad72ff",core:"#ead8ff",text:"күлгін",kind:"Жалын сынағында K⁺ күлгін реңк береді."},
+ Ca:{name:"Кальций",sample:"#bfc3c5",flame:"#f05a3b",core:"#ffd1bb",text:"қызғылт-сары-қызыл",kind:"Жалын сынағында Ca²⁺ тән түс береді."},
+ Mg:{name:"Магний",sample:"#c9cdd0",flame:"#ffffff",core:"#ffffff",text:"өте жарық ақ сәуле",kind:"Бұл — магнийдің жану көрінісі; Mg²⁺ үшін диагностикалық жалын түсі емес."},
+ Sr:{name:"Стронций",sample:"#c4c8c9",flame:"#e52f46",core:"#ffd0d5",text:"қызыл",kind:"Жалын сынағында Sr²⁺ қызыл реңк береді."},
+ Ba:{name:"Барий",sample:"#c3c8c2",flame:"#7ddb5a",core:"#dcffd0",text:"алма-жасыл",kind:"Жалын сынағында Ba²⁺ жасыл реңк береді."},
+ Cu:{name:"Мыс",sample:"#b96b43",flame:"#25c8a5",core:"#c9fff4",text:"көкшіл-жасыл",kind:"Кейбір мыс қосылыстары жалын сынағында көкшіл-жасыл түс береді."},
+ Fe:{name:"Темір",sample:"#747a7d",flame:"#ff9a35",core:"#ffe2b8",text:"қызған ұшқындар",kind:"Темір үшін бұл Na сияқты диагностикалық жалын сынағы емес; цифрлық жану эффектісі."},
+ C:{name:"Көміртек",sample:"#252525",flame:"#ff7a25",core:"#ffd6a3",text:"жану визуализациясы",kind:"Көміртектің жануы жалын сынағынан бөлек көрсетіледі."},
+ S:{name:"Күкірт",sample:"#e5d128",flame:"#2588ff",core:"#bfe7ff",text:"көк жалын",kind:"Күкірттің жануы көк жалын ретінде модельденеді."}
+};
+function selectBurn(s){
+ selectedBurn=s;let d=burnInfo[s],sm=document.getElementById("burnSample"),r=document.getElementById("burnReadout");
+ if(sm)sm.style.background=`linear-gradient(135deg,#fff9,${d.sample},#0005)`;
+ if(r)r.innerHTML=`<b>${d.name} (${s}) таңдалды</b><br><span class=muted>«Жағу» батырмасын басыңыз.</span>`;
+ stopBurn(false);
+}
+function igniteSelected(){
+ let r=document.getElementById("burnReadout"),f=document.getElementById("bigFlame"),sp=document.getElementById("sparks");
+ if(!selectedBurn){if(r)r.innerHTML="<b>Алдымен элемент таңдаңыз.</b>";return}
+ let d=burnInfo[selectedBurn]; f.style.setProperty("--flame",d.flame);f.style.setProperty("--core",d.core);f.classList.add("on");
+ if(sp)sp.innerHTML=(selectedBurn==="Fe"||selectedBurn==="Mg")?Array.from({length:15},(_,i)=>`<i class=spark style="left:${130+(i%5)*13}px;bottom:${120+(i%3)*8}px;--dx:${(i%2?1:-1)*(25+i*3)}px;animation-delay:${(i%6)*.12}s"></i>`).join(""):"";
+ if(r)r.innerHTML=`<b>🔥 ${d.name}: ${d.text}</b><br>${d.kind}<br><span class=muted>Цифрлық оқу симуляциясы.</span>`;
+}
+function stopBurn(clear=true){let f=document.getElementById("bigFlame"),sp=document.getElementById("sparks");if(f)f.classList.remove("on");if(sp)sp.innerHTML="";if(clear){let r=document.getElementById("burnReadout");if(r&&selectedBurn)r.innerHTML=`<b>${burnInfo[selectedBurn].name} (${selectedBurn})</b><br><span class=muted>Жалын өшірілді. Қайта жағуға болады.</span>`}}
+function sampleHTML(e){
+ return `<div class=sample style="width:240px;margin:25px auto 0"><div class=chunk style="background:linear-gradient(135deg,#fff8,${e[6]},#0008),${e[6]}"></div></div>`;
+}
+function visualFlame(color, glow=color){
+ return `<div class=flame style="background:radial-gradient(circle at 65% 65%,#fff 0 8%,${color} 28%,${color} 55%,transparent 70%);filter:drop-shadow(0 0 30px ${glow})"></div>`;
+}
+function burnElement(e){
+ let area=document.getElementById("flameArea"), n=document.getElementById("burnName");
+ const combustion={
+  "Mg":["Өте жарық ақ сәуле/жану","#ffffff","2Mg + O₂ → 2MgO"],
+  "S":["Көк жалын","#2588ff","S + O₂ → SO₂"],
+  "C":["Қыздыру/жану визуализациясы","#ff7a25","C + O₂ → CO₂"],
+  "Fe":["Қызған бөлшектердің цифрлық эффектісі","#ff9a35","Темірдің жануы жағдайға тәуелді; бұл — оқу визуализациясы."],
+  "Cu":["Айқын жалын түсі ретінде қолданылмайды","#ff7a25","Мыс металының жануын жалын сынағымен шатастырмаңыз."]
+ };
+ let d=combustion[e[0]];
+ n.innerHTML=`<b>🔥 Элементті жағу: ${e[1]} (${e[0]})</b>`;
+ if(!d){area.innerHTML=sampleHTML(e)+`<div class=card style="max-width:520px;margin:25px auto">Бұл элемент үшін жану моделі енгізілмеген.</div>`;return}
+ let flame=(e[0]==="Cu")?`<div class=card style="max-width:520px;margin:30px auto;text-align:center"><b>Жалын сынағы бөлімін пайдаланыңыз.</b></div>`:visualFlame(d[1]);
+ area.innerHTML=sampleHTML(e)+flame+`<div class=card style="max-width:540px;margin:15px auto"><b>${d[0]}</b><br>${d[2]}<br><span class=muted>Тек цифрлық оқу симуляциясы.</span></div>`;
+}
+function flameTest(e){
+ let area=document.getElementById("flameArea"), n=document.getElementById("burnName");
+ const tests={
+  "Li":["кармин-қызыл","#e63845","Li⁺"],
+  "Na":["ашық сары","#ffd326","Na⁺"],
+  "K":["күлгін","#ad72ff","K⁺"],
+  "Ca":["кірпіш-қызыл / қызғылт-сары-қызыл","#f05a3b","Ca²⁺"],
+  "Ba":["алма-жасыл","#7ddb5a","Ba²⁺"],
+  "Cu":["көкшіл-жасыл","#25c8a5","Cu қосылыстары"]
+ };
+ let d=tests[e[0]];
+ n.innerHTML=`<b>🎨 Жалын сынағы: ${e[1]} (${d?d[2]:e[0]})</b>`;
+ if(!d){area.innerHTML=`<div class=card style="max-width:520px;margin:35px auto">Бұл ион үшін айқын диагностикалық жалын түсі көрсетілмейді.</div>`;return}
+ area.innerHTML=sampleHTML(e)+visualFlame(d[1])+`<div class=card style="max-width:540px;margin:15px auto">Жалын түсі: <b>${d[0]}</b><br><span class=muted>Бұл — цифрлық жалын сынағының оқу визуализациясы.</span></div>`;
+}
+
+let virtualQty=[5,5],virtualVessel="Стакан";
+function updateQty(){
+ let a=document.getElementById("q1"),b=document.getElementById("q2");
+ if(a){virtualQty[0]=+a.value;document.getElementById("q1v").textContent=a.value+" бөлік"}
+ if(b){virtualQty[1]=+b.value;document.getElementById("q2v").textContent=b.value+" бөлік"}
+ let liq=document.getElementById("liq");if(liq&&chosen.length)liq.style.height=Math.min(78,10+(virtualQty[0]+virtualQty[1])*3)+"%";
+}
+function setVessel(btn,name){virtualVessel=name;document.querySelectorAll(".glassware button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");let r=document.getElementById("vesselRead");if(r)r.textContent="Ыдыс: "+name}
+renderCats();render();
+
+function qclMetalWaterVisual(){
+  const m=document.getElementById("metalPiece");
+  if(!m) return;
+  m.classList.remove("reactWater");
+  const picked=[...document.querySelectorAll(".reagent.selected,.reag.selected,.chip.selected,[data-selected='true']")]
+    .map(x=>(x.dataset.name||x.dataset.r||x.textContent||"").replace(/\s/g,""));
+  const sel=(document.getElementById("sel")?.textContent||"").replace(/\s/g,"");
+  const all=(picked.join("|")+"|"+sel);
+  if((all.includes("Na")||all.includes("Натрий")) && (all.includes("H₂O")||all.includes("H2O")||all.includes("Су"))){
+    void m.offsetWidth;
+    m.classList.add("reactWater");
+  }
+}
+
+
+function realisticReactionFX(k,r){
+ const liq=document.getElementById("liq"), ppt=document.getElementById("ppt"),
+       solid=document.querySelector("#solid .solidSample"),
+       coat=document.getElementById("metalCoating");
+ if(liq){liq.classList.remove("colorShift");void liq.offsetWidth}
+ if(ppt)ppt.classList.remove("forming");
+ if(coat){coat.classList.remove("show");coat.style.background="transparent"}
+
+ // Metals reacting with water or acid gradually become smaller/disappear.
+ const disappearKeys=["Li|H₂O","Na|H₂O","K|H₂O","Ca|H₂O","HCl|Zn"];
+ if(disappearKeys.includes(k)&&solid){
+   solid.classList.remove("reactAway");void solid.offsetWidth;solid.classList.add("reactAway");
+ }
+
+ // Precipitates appear as a cloud first, then settle.
+ if(r && r[3]==="precip" && ppt){
+   ppt.classList.add("forming");
+ }
+
+ // Copper displacement: metal surface gradually gains a copper-coloured deposit.
+ if((k==="CuSO₄|Fe"||k==="CuSO₄|Zn") && coat){
+   coat.style.background="linear-gradient(145deg,#e09a69,#a95532,#6d2d1d)";
+   void coat.offsetWidth; coat.classList.add("show");
+   if(liq){liq.style.background=k==="CuSO₄|Fe"?"#88a98d88":"#b9dce255";liq.classList.add("colorShift")}
+ }
+
+ // FeSO4/FeCl3/CuSO4 precipitation reactions also visibly shift the liquid.
+ if(r && r[3]==="precip" && liq){
+   liq.classList.add("colorShift");
+ }
+
+ // Calcium + water: slight cloudiness in the virtual solution.
+ if(k==="Ca|H₂O" && liq){
+   liq.style.background="#d9f1f0aa"; liq.classList.add("colorShift");
+ }
+}
+
+</script>
+<footer class="projectCredits">
+  <div>Орындаған: <strong>Рахматіллаева А.Т.</strong></div>
+  <div>Оқушы: <strong>Маханбет А.О.</strong></div>
+</footer>
+
+</body></html>
