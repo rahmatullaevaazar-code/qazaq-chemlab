@@ -496,7 +496,7 @@ function pick(f,n){
  if(el) drawElement(el[0],el[1]); else {let s=document.getElementById("solid"); if(s)s.innerHTML="";}
 }
 function key(){let chem=chosen.filter(x=>!indicators.has(x[0]));if(chem.length<2)return"";let a=chem[0][0],b=chem[1][0];return reactions[a+"|"+b]?a+"|"+b:(reactions[b+"|"+a]?b+"|"+a:"")}
-function runReaction(){ setTimeout(qclMetalWaterVisual,60);
+function runReaction(){
  let out=document.getElementById("result"), ind=chosen.find(x=>indicators.has(x[0]));
  let chem=chosen.filter(x=>!indicators.has(x[0]));
  if(ind && chem.length>=1){
@@ -528,6 +528,14 @@ function runReaction(){ setTimeout(qclMetalWaterVisual,60);
    return;
  }
  realisticReactionFX(key(),r);
+ if(key()==="Na|H₂O"){
+  const ss=document.querySelector("#solid .solidSample");
+  if(ss){
+    ss.classList.remove("reactAway");
+    void ss.offsetWidth;
+    ss.classList.add("reactAway");
+  }
+}
  out.innerHTML=`<h3>${r[1]}</h3><b>${r[0]}</b>`;
  if(r[3]==="precip"){let p=document.getElementById("ppt");p.style.background=r[2];p.style.height="25%"}
  if(r[3]==="gas"){let b=document.getElementById("bub");b.innerHTML=Array.from({length:22},(_,i)=>`<i style="left:${8+(i*13)%85}%;width:${7+i%8}px;height:${7+i%8}px;animation-delay:${(i%7)*.18}s"></i>`).join("");let s=document.getElementById("smoke");if(s)s.innerHTML=Array.from({length:7},(_,i)=>`<i style="left:${i*17}px;animation-delay:${i*.35}s"></i>`).join("")}
