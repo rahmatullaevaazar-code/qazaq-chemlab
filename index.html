@@ -674,7 +674,21 @@ function realisticReactionFX(k,r){
 
  // Metals reacting with water or acid gradually become smaller/disappear.
  const disappearKeys=["Li|H₂O","Na|H₂O","K|H₂O","Ca|H₂O","HCl|Zn"];
- if(disappearKeys.includes(k)&&solid){
+if(disappearKeys.includes(k) && solid){
+  solid.getAnimations().forEach(a => a.cancel());
+
+  solid.animate([
+    {transform:"translateX(-50%) scale(1)", opacity:1},
+    {transform:"translateX(-45%) scale(.8)", opacity:1},
+    {transform:"translateX(-55%) scale(.5)", opacity:.8},
+    {transform:"translateX(-50%) scale(.2)", opacity:.4},
+    {transform:"translateX(-50%) scale(0)", opacity:0}
+  ],{
+    duration:4600,
+    easing:"ease-in-out",
+    fill:"forwards"
+  });
+}
    solid.classList.remove("reactAway");void solid.offsetWidth;solid.classList.add("reactAway");
  }
 
