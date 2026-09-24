@@ -330,13 +330,31 @@ html body #view .burnLab .card{
 /* Realistic digital reaction effects */
 .realBeaker{overflow:hidden}
 #solid{position:absolute;inset:0;z-index:7;pointer-events:none}
-.solidSample.reactAway{animation:reactAway 4.6s ease-in-out forwards}
+.solidSample.reactAway{
+  animation:reactAway 4.6s ease-in-out forwards !important;
+}
+
 @keyframes reactAway{
-  0%{transform:translate(0,0) scale(1);opacity:1}
-  25%{transform:translate(10px,-2px) scale(.86);opacity:1}
-  50%{transform:translate(-8px,2px) scale(.62);opacity:.9}
-  75%{transform:translate(7px,0) scale(.34);opacity:.65}
-  100%{transform:translate(-4px,3px) scale(.05);opacity:0}
+  0%{
+    transform:translateX(-50%) scale(1);
+    opacity:1;
+  }
+  25%{
+    transform:translateX(-45%) scale(.82);
+    opacity:1;
+  }
+  50%{
+    transform:translateX(-55%) scale(.58);
+    opacity:.9;
+  }
+  75%{
+    transform:translateX(-48%) scale(.28);
+    opacity:.55;
+  }
+  100%{
+    transform:translateX(-50%) scale(0);
+    opacity:0;
+  }
 }
 .realPpt{transition:height 2.8s ease,background 1.2s ease;filter:blur(.15px)}
 .realPpt.forming{animation:pptCloud 2.8s ease-out}
